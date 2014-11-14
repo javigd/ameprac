@@ -113,6 +113,7 @@ public class PlayActivity extends ActionBarActivity {
 			imgViews[GREEN].setVisibility(View.INVISIBLE);
 			imgViews[BLUE].setVisibility(View.INVISIBLE);
 			imgViews[YELLOW].setVisibility(View.INVISIBLE);
+			imgViews[LIGHT].setVisibility(View.INVISIBLE);
 		}
 	}
 
