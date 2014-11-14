@@ -63,16 +63,19 @@ public class PlayActivity extends ActionBarActivity {
 				/* Get a positive 0-360 representation of the angle */
 				angle += 180;
 				System.out.println("angle:" + angle);
-				/* Set the proper ImageView as visible */
-		        if(angle >= 0 && angle < 90) {
-		            setActive(imgViews, GREEN);
-		        } else if (angle >= 90 && angle < 180) {
-		        	setActive(imgViews, YELLOW);
-		        } else if (angle >= 180 && angle < 270) {
-		        	setActive(imgViews, BLUE);
-		        } else {
-		        	setActive(imgViews, RED);
-		        }
+				// if touch in range (inside the circle)
+				if(Math.sqrt(Math.pow(touch_x - location[0], 2) + Math.pow(touch_y- location[1], 2)) < (simonPlain.getWidth() / 2)) {
+					/* Set the proper ImageView as visible */
+			        if(angle >= 0 && angle < 90) {
+			            setActive(imgViews, GREEN);
+			        } else if (angle >= 90 && angle < 180) {
+			        	setActive(imgViews, YELLOW);
+			        } else if (angle >= 180 && angle < 270) {
+			        	setActive(imgViews, BLUE);
+			        } else {
+			        	setActive(imgViews, RED);
+			        }
+				}
 		        
 		        return false;
 			}
