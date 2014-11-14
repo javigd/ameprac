@@ -8,16 +8,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.deim.ame.simon.MainActivity" >
 
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:contentDescription="@string/app_name"
-        android:src="@drawable/simonlogo" />
-
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/welcomeTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -26,12 +18,23 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/playBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView2"
+        android:layout_below="@+id/welcomeTxt"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="35dp"
-        android:text="@string/play_now"></Button>
+        android:text="@string/play_now"
+        android:onClick="newPlay" >
+</Button>
+
+    <ImageView
+        android:id="@+id/welcomeImgView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/welcomeTxt"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/simonlogo" />
 
 </RelativeLayout>

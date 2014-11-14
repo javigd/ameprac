@@ -9,6 +9,7 @@
         android:targetSdkVersion="21" />
 
     <application
+        android:debuggable="true"
         android:allowBackup="true"
         android:icon="@drawable/simonicon"
         android:label="@string/app_name"
@@ -21,6 +22,14 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".PlayActivity"
+            android:label="@string/title_activity_play"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.deim.ame.simon.MainActivity" />
         </activity>
     </application>
 
