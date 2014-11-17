@@ -1,85 +1,38 @@
 package com.deim.ame.simon;
 
+import com.deim.ame.simon.Config.Constants;
+import com.deim.ame.simon.utils.SimonOnTouchListener;
+import com.deim.ame.simon.utils.Util;
+
 import android.support.v7.app.ActionBarActivity;
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 public class PlayActivity extends ActionBarActivity {
-	private Handler mHandler = new Handler();
-	private static final int RED = 0;
-	private static final int BLUE = 1;
-	private static final int YELLOW = 2;
-	private static final int GREEN = 3;
-	private static final int LIGHT = 4;
-	private static final int PLAIN = 5;
+	
+	private static OnTouchListener simonOnTouchListener;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_play);
 		
-		/* Instatiate the main ImageViews */
-		final ImageView simonPlain = (ImageView) findViewById(R.id.simonPlainImg);
-		final ImageView simonRed = (ImageView) findViewById(R.id.simonRedImg);
-		final ImageView simonBlue = (ImageView) findViewById(R.id.simonBlueImg);
-		final ImageView simonGreen = (ImageView) findViewById(R.id.simonGreenImg);
-		final ImageView simonYellow = (ImageView) findViewById(R.id.simonYellowImg);
-		final ImageView simonLight = (ImageView) findViewById(R.id.simonLightImg);
+		/* Get the main ImageViews */
+		final ImageView[] imgViews = this.getImageViews();
 		
-		/* Set an array of available ImageViews */
-		final ImageView[] imgViews = {simonRed, simonBlue, simonYellow, simonGreen, simonLight, simonPlain };
+		/* Show the startup motion */
+		Util.startupBlink(imgViews);
 		
-		//TODO: add sequence as an int array parameter below
-		//showSequence(imgViews);
-		setActive(imgViews, LIGHT);
+		/* Initialize the Listener */
+		simonOnTouchListener = new SimonOnTouchListener(imgViews);
 		
-		/* Set the onClick Listener */
-		simonPlain.setOnTouchListener(new OnTouchListener() {
-			
-			@Override
-			public boolean onTouch(View v, MotionEvent event) {
-				/* Get the touch point on X coords */
-				int touch_x = (int) event.getX();
-				System.out.println("x:" + touch_x);
-				/* Get the touch point on Y coords */
-				int touch_y = (int) event.getY();
-				System.out.println("y:" + touch_y);
-				/* Get image location on screen */
-				int[] location = new int[2];
-				simonPlain.getLocationOnScreen(location);
-				location[0] += simonPlain.getWidth() / 4;
-				location[1] -= simonPlain.getWidth() / 4;
-				/* Compute its angle */
-				float angle = (float) Math.toDegrees(Math.atan2(touch_x - location[0], touch_y - location[1]));
-				/* Get a positive 0-360 representation of the angle */
-				angle += 180;
-				System.out.println("angle:" + angle);
-				// if touch in range (inside the circle)
-				if(Math.sqrt(Math.pow(touch_x - location[0], 2) + Math.pow(touch_y- location[1], 2)) < (simonPlain.getWidth() / 2)) {
-					/* Set the proper ImageView as visible */
-			        if(angle >= 0 && angle < 90) {
-			            setActive(imgViews, GREEN);
-			        } else if (angle >= 90 && angle < 180) {
-			        	setActive(imgViews, YELLOW);
-			        } else if (angle >= 180 && angle < 270) {
-			        	setActive(imgViews, BLUE);
-			        } else {
-			        	setActive(imgViews, RED);
-			        }
-				}
-		        
-		        return false;
-			}
-		});
+		/* Set the onClick Listener over the Views area */
+		PlayActivity.enableOnTouchListener(imgViews);
+		
+		
 	}
 	
 	@Override
@@ -101,23 +54,41 @@ public class PlayActivity extends ActionBarActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	/**************PRIVATE METHODS**************/
+	
+	/***************** AUXILIARY METHODS *****************/
 	
 	/**
-	 * Set a simon ImageView as "active" or visible passing the state (color) as parameter
-	 * @param state, according to the four simon colors, -1 to set it plain, 4 to set all 4 active
+	 * Get the main Simon game ImageViews defined
+	 * @return
 	 */
-	private void setActive (ImageView[] imgViews, int state) {
-		if(state != 5) {
-			setActive(imgViews, 5);
-			imgViews[state].setVisibility(View.VISIBLE);
-		} else {
-			imgViews[RED].setVisibility(View.INVISIBLE);
-			imgViews[GREEN].setVisibility(View.INVISIBLE);
-			imgViews[BLUE].setVisibility(View.INVISIBLE);
-			imgViews[YELLOW].setVisibility(View.INVISIBLE);
-			imgViews[LIGHT].setVisibility(View.INVISIBLE);
-		}
+	private ImageView[] getImageViews() {
+		
+		/* Get the main ImageView objects */
+		final ImageView simonPlain = (ImageView) findViewById(R.id.simonPlainImg);
+		final ImageView simonRed = (ImageView) findViewById(R.id.simonRedImg);
+		final ImageView simonBlue = (ImageView) findViewById(R.id.simonBlueImg);
+		final ImageView simonGreen = (ImageView) findViewById(R.id.simonGreenImg);
+		final ImageView simonYellow = (ImageView) findViewById(R.id.simonYellowImg);
+		final ImageView simonLight = (ImageView) findViewById(R.id.simonLightImg);
+		
+		/* Set an array of available ImageViews */
+		return new ImageView[] {simonRed, simonBlue, simonYellow, simonGreen, simonLight, simonPlain };
 	}
-
+	
+	/**
+	 * Set the OnTouchListener to the defined SimonOnTouchListener
+	 * @param imgViews
+	 */
+	public static void enableOnTouchListener(ImageView[] imgViews) {
+		imgViews[Constants.PLAIN].setOnTouchListener(simonOnTouchListener);
+	}
+	
+	/**
+	 * Disable the OnTouchListener on the given View
+	 * @param imgView
+	 */
+	public static void disableOnTouchListener(ImageView imgView) {
+		imgView.setOnTouchListener(null);
+	}
+	
 }

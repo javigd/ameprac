@@ -10,6 +10,7 @@
 
     <ImageView
         android:id="@+id/simonPlainImg"
+        android:contentDescription="@string/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -18,6 +19,7 @@
 
     <ImageView
         android:id="@+id/simonLightImg"
+        android:contentDescription="@string/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -27,6 +29,7 @@
 
     <ImageView
         android:id="@+id/simonRedImg"
+        android:contentDescription="@string/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -36,6 +39,7 @@
 
     <ImageView
         android:id="@+id/simonBlueImg"
+        android:contentDescription="@string/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -45,6 +49,7 @@
 
     <ImageView
         android:id="@+id/simonYellowImg"
+        android:contentDescription="@string/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
@@ -54,6 +59,7 @@
 
     <ImageView
         android:id="@+id/simonGreenImg"
+        android:contentDescription="@string/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
