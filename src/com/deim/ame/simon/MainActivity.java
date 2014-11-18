@@ -64,6 +64,8 @@ public class MainActivity extends ActionBarActivity {
 		
 	    System.out.println("Difficulty: "+difficulty);
 	    Intent intent = new Intent(this, PlayActivity.class);
+	    intent.putExtra("difficulty", difficulty);
 	    startActivity(intent);
+	    
 	}
 }

@@ -5,6 +5,7 @@ import com.deim.ame.simon.utils.SimonOnTouchListener;
 import com.deim.ame.simon.utils.Util;
 
 import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +33,11 @@ public class PlayActivity extends ActionBarActivity {
 		/* Set the onClick Listener over the Views area */
 		PlayActivity.enableOnTouchListener(imgViews);
 		
+		Intent intent = getIntent();
+		 
+        // 2. get message value from intent
+        int difficulty = Integer.parseInt(intent.getStringExtra("difficulty"));
+        System.out.println("PlayActivityDifficulty: "+difficulty);
 		
 	}
 	
