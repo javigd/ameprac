@@ -6,14 +6,39 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RadioGroup.OnCheckedChangeListener;
 
 public class MainActivity extends ActionBarActivity {
-
+	int difficulty = 0;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		final RadioGroup difficultyRadioGroup = (RadioGroup)findViewById(R.id.difficultyGroup);
+	    
+	    difficultyRadioGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() 
+        {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch(checkedId){
+                
+                    case R.id.radioButtonEasy:
+                    	difficulty = 0;
+                    break;
+
+                    case R.id.radioButtonMedium:
+                    	difficulty = 1;
+                    break;
+
+                    case R.id.radioButtonHard:
+                    	difficulty = 2;
+                    break;
+                }
+            }
+        });
 	}
 
 	@Override
@@ -36,9 +61,8 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	public void newPlay(View view) {
-	    final RadioGroup difficultyRadioGroup = (RadioGroup)findViewById(R.id.difficultyGroup);
-	    int checked = difficultyRadioGroup.getCheckedRadioButtonId();
-	    
+		
+	    System.out.println("Difficulty: "+difficulty);
 	    Intent intent = new Intent(this, PlayActivity.class);
 	    startActivity(intent);
 	}

@@ -61,7 +61,8 @@
 	        android:layout_alignLeft="@+id/levelTxt"
 	        android:layout_below="@+id/levelTxt"
 	        android:layout_marginTop="27dp"
-	        android:text="Easy" />
+	        android:text="Easy" 
+	        android:checked="true"/>
 
 	    <RadioButton
 	        android:id="@+id/radioButtonMedium"
