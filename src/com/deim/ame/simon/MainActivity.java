@@ -6,6 +6,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RadioGroup;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -35,6 +36,9 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	public void newPlay(View view) {
+	    final RadioGroup difficultyRadioGroup = (RadioGroup)findViewById(R.id.difficultyGroup);
+	    int checked = difficultyRadioGroup.getCheckedRadioButtonId();
+	    
 	    Intent intent = new Intent(this, PlayActivity.class);
 	    startActivity(intent);
 	}

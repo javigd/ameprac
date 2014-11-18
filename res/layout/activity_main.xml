@@ -9,32 +9,75 @@
     tools:context="com.deim.ame.simon.MainActivity" >
 
     <TextView
-        android:id="@+id/welcomeTxt"
+        android:id="@+id/levelTxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/welcomeTxt"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="@string/app_name"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:layout_marginTop="18dp"
+        android:text="Choose the level: " />
 
     <Button
         android:id="@+id/playBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/welcomeTxt"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="35dp"
-        android:text="@string/play_now"
-        android:onClick="newPlay" >
-</Button>
+        android:onClick="newPlay"
+        android:text="@string/play_now" />
 
     <ImageView
         android:id="@+id/welcomeImgView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/welcomeTxt"
+        android:layout_above="@+id/playBtn"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="22dp"
         android:contentDescription="@string/app_name"
         android:src="@drawable/simonlogo" />
+
+    <TextView
+        android:id="@+id/welcomeTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="14dp"
+        android:text="@string/app_name"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+	<RadioGroup
+	    android:id="@+id/difficultyGroup"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignLeft="@+id/levelTxt"
+	    android:layout_below="@+id/levelTxt"
+	    android:orientation="vertical" >
+
+	    <RadioButton
+	        android:id="@+id/radioButtonEasy"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/levelTxt"
+	        android:layout_below="@+id/levelTxt"
+	        android:layout_marginTop="27dp"
+	        android:text="Easy" />
+
+	    <RadioButton
+	        android:id="@+id/radioButtonMedium"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/radioButtonEasy"
+	        android:layout_below="@+id/radioButtonEasy"
+	        android:text="Medium" />
+
+	    <RadioButton
+	        android:id="@+id/radioButtonHard"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/radioButtonMedium"
+	        android:layout_below="@+id/radioButtonMedium"
+	        android:text="Hard" />
+	</RadioGroup>
 
 </RelativeLayout>
