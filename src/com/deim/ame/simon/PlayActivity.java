@@ -15,6 +15,7 @@ import android.widget.ImageView;
 public class PlayActivity extends ActionBarActivity {
 	
 	private static OnTouchListener simonOnTouchListener;
+	int[] delay = {Constants.BLINK_FREQ_EASY, Constants.BLINK_FREQ_MEDIUM, Constants.BLINK_FREQ_HARD };
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +34,29 @@ public class PlayActivity extends ActionBarActivity {
 		/* Set the onClick Listener over the Views area */
 		PlayActivity.enableOnTouchListener(imgViews);
 		
+        // Get difficulty value from intent
 		Intent intent = getIntent();
-		 
-        // 2. get message value from intent
-        int difficulty = Integer.parseInt(intent.getStringExtra("difficulty"));
+        int difficulty = intent.getIntExtra("difficulty", 0);
         System.out.println("PlayActivityDifficulty: "+difficulty);
+        
+        //TODO: Logica del joc (Segons el nostre pseudocodi):
+        // Dos estats: showSequence & playSequence
+        
+        // EDs: Dos int arrays, per la seqüència generada i per la seqüència introduida per l'usuari 
+        
+        // Loop principal: (Mentre no fi sequència)
+        // 		Mostrar nivell i animació d'entrada
+        //		Afegir random int a la seqüència d'enters (0-3)
+        //		-showSequence (fer blink de la seqüència d'enters)
+        // 		-playSequence (Mentre moviment vàlid) (usar mètode Util.validMove)
+        //			- El Listener hauria d'afegir els colors que va clicant a la seqüència del usuari!! 
+        
+//        // Example sequence to test the blink: Ctrl+shift+C to uncomment
+//        int[] sequencexample = {Constants.RED, Constants.BLUE, Constants.YELLOW, Constants.GREEN,
+//        		Constants.RED, Constants.BLUE, Constants.YELLOW, Constants.GREEN,
+//        		Constants.RED, Constants.BLUE, Constants.YELLOW, Constants.GREEN, Constants.PLAIN };
+//        
+//		Util.blink(imgViews, sequence, delay[difficulty], 0);
 		
 	}
 	
