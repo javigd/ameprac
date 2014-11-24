@@ -36,15 +36,18 @@ public class Util {
 	 * @param state
 	 * @param delay
 	 */
-	public synchronized static void blink(final ImageView[] imgViews, final int[] sequence, final int delay, final int iter) {
+	public synchronized static void blink(final ImageView[] imgViews, final int[] sequence, final int delay, final int iter,boolean userMove) {
 		// Set the specified imageView as active
 	    setActive(imgViews, sequence[iter]);
 	    final int i = iter + 1;
 	    //System.out.println("Sending to blink.." + sequence[iter]);
 	    // Send a delayed thread to the queue in order to change to the next blink state
 	    if (i < sequence.length) {
-	    	handler.postDelayed(new BlinkThread(imgViews, sequence, delay, i), delay);
+	    	handler.postDelayed(new BlinkThread(imgViews, sequence, delay, i,userMove), delay);
 	    } else {
+	    	if(userMove){
+	    		PlayActivity.addUserMove(sequence[0]);
+	    	}
 	    	PlayActivity.enableOnTouchListener(imgViews);
 	    }
 	}
@@ -61,7 +64,7 @@ public class Util {
 			sequence[i+1] = Constants.PLAIN;
 		}
 		// Blink
-		blink(imgViews, sequence, Constants.STARTUP_BLINK_FREQ, 0);
+		blink(imgViews, sequence, Constants.STARTUP_BLINK_FREQ, 0,false);
 	}
 	
 	/**
@@ -70,7 +73,7 @@ public class Util {
 	 * @param sequence
 	 * @return
 	 */
-	public boolean validMove(int[] inputSequence, int[] sequence) {
+	public static boolean validMove(int[] inputSequence, int[] sequence) {
 		for (int i = 0; i < inputSequence.length; i++) {
 			if (inputSequence[i] != sequence[i]) {
 				return false;

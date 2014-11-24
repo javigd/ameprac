@@ -1,5 +1,7 @@
 package com.deim.ame.simon;
 
+import java.util.Arrays;
+
 import com.deim.ame.simon.Config.Constants;
 import com.deim.ame.simon.utils.SimonOnTouchListener;
 import com.deim.ame.simon.utils.Util;
@@ -15,7 +17,9 @@ import android.widget.ImageView;
 public class PlayActivity extends ActionBarActivity {
 	
 	private static OnTouchListener simonOnTouchListener;
-	int[] delay = {Constants.BLINK_FREQ_EASY, Constants.BLINK_FREQ_MEDIUM, Constants.BLINK_FREQ_HARD };
+	static int [] sequence;
+	static int [] userSequence;
+	static int userMove;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +41,16 @@ public class PlayActivity extends ActionBarActivity {
         // Get difficulty value from intent
 		Intent intent = getIntent();
         int difficulty = intent.getIntExtra("difficulty", 0);
-        System.out.println("PlayActivityDifficulty: "+difficulty);
+       
+        while(true){
+        	 newGame(imgViews,difficulty);
+        }
+       
+        //showSequence to user 
+       /* for(int i=0;i<sequence.length;i++){
+        	sequence[i]=(int)(Math.random()%3);
+        	Util.blink(imgViews, sequence, delay[difficulty], i);
+        }*/
         
         //TODO: Logica del joc (Segons el nostre pseudocodi):
         // Dos estats: showSequence & playSequence
@@ -115,5 +128,45 @@ public class PlayActivity extends ActionBarActivity {
 	public static void disableOnTouchListener(ImageView imgView) {
 		imgView.setOnTouchListener(null);
 	}
+	private static void addColorToSequence(int round){
+		sequence[round-1]=(int)(Math.random()%3);
+		//sequence[round]=Constants.PLAIN;
+	}
 	
+	private static boolean newRound(int round,ImageView[] imgViews, int difficulty){
+		userSequence = new int [Constants.MAX_ROUNDS];
+		userMove=0;
+		addColorToSequence(round);
+		int [] showSeq=Arrays.copyOf(sequence,round+1);
+		showSeq[round]=Constants.PLAIN;
+		Util.blink(imgViews,showSeq,Constants.delay[difficulty],0,false);
+		while(true){
+			if(userMove<userSequence.length){
+				if(!Util.validMove(userSequence,sequence)){
+					return false;
+				}
+				userMove++;
+			}
+			if(userSequence.length==round){
+				break;
+			}
+		}
+		
+		return true;
+	}
+	private static void newGame(ImageView[] imgViews,int difficulty){
+		int round = 1;
+		sequence = new int [Constants.MAX_ROUNDS];
+		while(round<=10){
+			if(!newRound(round,imgViews,difficulty)){
+				break;
+			}round++;
+		}
+		
+	}
+	
+	public static void addUserMove(int move){
+		userSequence[userMove]=move;
+		
+	}
 }

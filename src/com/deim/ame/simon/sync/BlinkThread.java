@@ -9,20 +9,22 @@ public class BlinkThread implements Runnable {
 	private int[] sequence;
 	private int delay;
 	private int i;
+	private boolean userMove;
 	
-	public BlinkThread(ImageView[] imgViews, int[] sequence, int delay, int i) {
+	public BlinkThread(ImageView[] imgViews, int[] sequence, int delay, int i,boolean userMove) {
 		super();
 		this.imgViews = imgViews;
 		this.sequence = sequence;
 		this.delay = delay;
 		this.i = i;
+		this.userMove = userMove;
 	}
 	
 	@Override
 	public void run() {
 		try {
 			System.out.println("BLINKING to ..." + sequence[i]);
-			Util.blink(imgViews, sequence, delay, i);
+			Util.blink(imgViews, sequence, delay, i,userMove);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

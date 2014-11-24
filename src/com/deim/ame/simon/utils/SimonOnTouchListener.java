@@ -61,7 +61,7 @@ public class SimonOnTouchListener implements OnTouchListener {
 	private void doBlink(int state) {
 		PlayActivity.disableOnTouchListener(imgViews[Constants.PLAIN]);
 		int[] touchSeq = {state, Constants.PLAIN};
-		Util.blink(imgViews, touchSeq, Constants.DEFAULT_BLINK_FREQ, 0);
+		Util.blink(imgViews, touchSeq, Constants.DEFAULT_BLINK_FREQ, 0,true);
 	}
 
 }

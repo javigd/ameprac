@@ -9,6 +9,9 @@ public class Constants {
 	public static final int BLINK_FREQ_MEDIUM = 1000;
 	public static final int BLINK_FREQ_HARD = 200;
 	public static final int DEFAULT_BLINK_FREQ = BLINK_FREQ_MEDIUM;
+	public static final int MAX_ROUNDS = 10;
+	public static final int[] delay = {Constants.BLINK_FREQ_EASY, Constants.BLINK_FREQ_MEDIUM, Constants.BLINK_FREQ_HARD };
+
 	
 	/* ImageView Constants */
 	public static final int RED = 0;
