@@ -1,8 +1,11 @@
 package com.deim.ame.simon;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import com.deim.ame.simon.Config.Constants;
+import com.deim.ame.simon.sync.BlinkTask;
 import com.deim.ame.simon.utils.SimonOnTouchListener;
 import com.deim.ame.simon.utils.Util;
 
@@ -11,68 +14,42 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 public class PlayActivity extends ActionBarActivity {
-	
+
 	private static OnTouchListener simonOnTouchListener;
-	static int [] sequence;
-	static int [] userSequence;
-	static int userMove;
-	
+	private static ImageView[] imgViews;
+	private static List<Integer> sequence;
+	private static List<Integer> userSequence;
+	private static int difficulty;
+	private static int round;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_play);
-		
+
 		/* Get the main ImageViews */
-		final ImageView[] imgViews = this.getImageViews();
-		
-		/* Show the startup motion */
-		Util.startupBlink(imgViews);
-		
+		imgViews = this.getImageViews();
+
 		/* Initialize the Listener */
 		simonOnTouchListener = new SimonOnTouchListener(imgViews);
-		
+
 		/* Set the onClick Listener over the Views area */
-		PlayActivity.enableOnTouchListener(imgViews);
-		
-        // Get difficulty value from intent
+		enableOnTouchListener();
+
+		// Get difficulty value from intent
 		Intent intent = getIntent();
-        int difficulty = intent.getIntExtra("difficulty", 0);
-       
-        while(true){
-        	 newGame(imgViews,difficulty);
-        }
-       
-        //showSequence to user 
-       /* for(int i=0;i<sequence.length;i++){
-        	sequence[i]=(int)(Math.random()%3);
-        	Util.blink(imgViews, sequence, delay[difficulty], i);
-        }*/
-        
-        //TODO: Logica del joc (Segons el nostre pseudocodi):
-        // Dos estats: showSequence & playSequence
-        
-        // EDs: Dos int arrays, per la seqüència generada i per la seqüència introduida per l'usuari 
-        
-        // Loop principal: (Mentre no fi sequència)
-        // 		Mostrar nivell i animació d'entrada
-        //		Afegir random int a la seqüència d'enters (0-3)
-        //		-showSequence (fer blink de la seqüència d'enters)
-        // 		-playSequence (Mentre moviment vàlid) (usar mètode Util.validMove)
-        //			- El Listener hauria d'afegir els colors que va clicant a la seqüència del usuari!! 
-        
-//        // Example sequence to test the blink: Ctrl+shift+C to uncomment
-//        int[] sequencexample = {Constants.RED, Constants.BLUE, Constants.YELLOW, Constants.GREEN,
-//        		Constants.RED, Constants.BLUE, Constants.YELLOW, Constants.GREEN,
-//        		Constants.RED, Constants.BLUE, Constants.YELLOW, Constants.GREEN, Constants.PLAIN };
-//        
-//		Util.blink(imgViews, sequence, delay[difficulty], 0);
-		
+		difficulty = intent.getIntExtra("difficulty", 0);
+
+		/* Start a new Game */
+		newGame();
 	}
-	
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -91,16 +68,16 @@ public class PlayActivity extends ActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	
+
 	/***************** AUXILIARY METHODS *****************/
-	
+
 	/**
 	 * Get the main Simon game ImageViews defined
+	 * 
 	 * @return
 	 */
 	private ImageView[] getImageViews() {
-		
+
 		/* Get the main ImageView objects */
 		final ImageView simonPlain = (ImageView) findViewById(R.id.simonPlainImg);
 		final ImageView simonRed = (ImageView) findViewById(R.id.simonRedImg);
@@ -108,65 +85,100 @@ public class PlayActivity extends ActionBarActivity {
 		final ImageView simonGreen = (ImageView) findViewById(R.id.simonGreenImg);
 		final ImageView simonYellow = (ImageView) findViewById(R.id.simonYellowImg);
 		final ImageView simonLight = (ImageView) findViewById(R.id.simonLightImg);
-		
+
 		/* Set an array of available ImageViews */
-		return new ImageView[] {simonRed, simonBlue, simonYellow, simonGreen, simonLight, simonPlain };
+		return new ImageView[] { simonRed, simonBlue, simonYellow, simonGreen,
+				simonLight, simonPlain };
 	}
-	
+
 	/**
 	 * Set the OnTouchListener to the defined SimonOnTouchListener
+	 * 
 	 * @param imgViews
 	 */
-	public static void enableOnTouchListener(ImageView[] imgViews) {
+	public static void enableOnTouchListener() {
+		simonOnTouchListener = new SimonOnTouchListener(imgViews);
 		imgViews[Constants.PLAIN].setOnTouchListener(simonOnTouchListener);
 	}
-	
+
 	/**
 	 * Disable the OnTouchListener on the given View
+	 * 
 	 * @param imgView
 	 */
-	public static void disableOnTouchListener(ImageView imgView) {
-		imgView.setOnTouchListener(null);
+	public static void disableOnTouchListener() {
+		System.out.println("disabling listener...");
+		imgViews[Constants.PLAIN].setOnTouchListener(null);
 	}
-	private static void addColorToSequence(int round){
-		sequence[round-1]=(int)(Math.random()%3);
-		//sequence[round]=Constants.PLAIN;
+
+	/***************** GAME LOGIC *****************/
+
+	/**
+	 * Initialize a new game.
+	 */
+	private static void newGame() {
+		// Initialize game variables
+		round = 1;
+		sequence = new ArrayList<Integer>();
+		// Initialize a new round
+		newRound();
 	}
-	
-	private static boolean newRound(int round,ImageView[] imgViews, int difficulty){
-		userSequence = new int [Constants.MAX_ROUNDS];
-		userMove=0;
-		addColorToSequence(round);
-		int [] showSeq=Arrays.copyOf(sequence,round+1);
-		showSeq[round]=Constants.PLAIN;
-		Util.blink(imgViews,showSeq,Constants.delay[difficulty],0,false);
-		while(true){
-			if(userMove<userSequence.length){
-				if(!Util.validMove(userSequence,sequence)){
-					return false;
-				}
-				userMove++;
-			}
-			if(userSequence.length==round){
-				break;
-			}
+
+	/**
+	 * Initialize a new round.
+	 */
+	private static void newRound() {
+		if (round >= Constants.MAX_ROUNDS) {
+			System.exit(0);
 		}
-		
-		return true;
+		userSequence = new ArrayList<Integer>();
+		showSequence();
+		round++;
 	}
-	private static void newGame(ImageView[] imgViews,int difficulty){
-		int round = 1;
-		sequence = new int [Constants.MAX_ROUNDS];
-		while(round<=10){
-			if(!newRound(round,imgViews,difficulty)){
-				break;
-			}round++;
+
+	/**
+	 * Add a random color to the show sequence
+	 * 
+	 * @param round
+	 */
+	private static void addColorToSequence() {
+		Random random = new Random();
+		sequence.add((Integer) Math.abs((random.nextInt() % 4)));
+	}
+
+	/**
+	 * Show the sequence to the user, disabling all touch listeners
+	 * 
+	 * @param round
+	 * @param imgViews
+	 * @param difficulty
+	 */
+	private static void showSequence() {
+		// Disable all touch listeners
+		disableOnTouchListener();
+		// Add a new color to the show sequence
+		addColorToSequence();
+		// Generates the show sequence with a PLAIN color on the last position
+		ArrayList<Integer> showSeq = new ArrayList<Integer>();
+		showSeq.addAll(sequence);
+		showSeq.add(Constants.PLAIN);
+		// Initialize and execute the blink async task
+		BlinkTask blink = new BlinkTask(imgViews, Constants.DELAY[difficulty],
+				false);
+		blink.execute(showSeq);
+	}
+
+	/**
+	 * Add a user move to the user input sequence
+	 * 
+	 * @param move
+	 */
+	public static void addUserMove(int move) {
+		userSequence.add(move);
+		if (!Util.validMove(userSequence, sequence)) {
+			newGame();
+		} else if (userSequence.size() >= sequence.size()) {
+			newRound();
 		}
-		
-	}
-	
-	public static void addUserMove(int move){
-		userSequence[userMove]=move;
-		
 	}
 }
