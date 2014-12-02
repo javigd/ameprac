@@ -6,6 +6,7 @@ import com.deim.ame.simon.PlayActivity;
 import com.deim.ame.simon.Config.Constants;
 import com.deim.ame.simon.utils.Util;
 
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,6 +16,8 @@ public class BlinkTask extends AsyncTask<List<Integer>, Integer, Integer> {
 	private List<Integer> startupSeq;
 	private int delay;
 	private boolean userMove;
+    private static MediaPlayer[] buttonSounds;
+    private static MediaPlayer transitionSound;
 
 	/**
 	 * Make a sequence of ImageView blink for a specified time given, disabling
@@ -24,11 +27,13 @@ public class BlinkTask extends AsyncTask<List<Integer>, Integer, Integer> {
 	 * @param delay
 	 * @param userMove
 	 */
-	public BlinkTask(ImageView[] imgViews, int delay, boolean userMove) {
+	public BlinkTask(ImageView[] imgViews, int delay, boolean userMove, MediaPlayer[] buttonSounds, MediaPlayer transitionSound) {
 		super();
 		this.imgViews = imgViews;
 		this.delay = delay;
 		this.userMove = userMove;
+		this.buttonSounds = buttonSounds;
+		this.transitionSound = transitionSound;
 		/* Get the transition animation if required */
 		if(!userMove) {
 			startupSeq = Util.getStartupBlink(imgViews);
@@ -44,12 +49,13 @@ public class BlinkTask extends AsyncTask<List<Integer>, Integer, Integer> {
 		}
 		// Do the animation
 		for (int i = 0; i < sequence.size(); i++) {
+			int state = sequence.get(i);
 			// Set the specified imageView as active
-			publishProgress(sequence.get(i));
-			System.out.println("Sending to blink.." + sequence.get(i));
+			publishProgress(state);
 			// Send a delayed thread to the queue in order to change to the next
 			// blink state
 			if (i != sequence.size() - 1) {
+				buttonSounds[state].start();
 				// Sleep
 				doSleep(delay);
 				// Transition
@@ -69,6 +75,7 @@ public class BlinkTask extends AsyncTask<List<Integer>, Integer, Integer> {
 		if (userMove) {
 			PlayActivity.addUserMove(result);
 		}
+		PlayActivity.enableTouch();
 		PlayActivity.enableOnTouchListener();
 	}
 
@@ -99,6 +106,7 @@ public class BlinkTask extends AsyncTask<List<Integer>, Integer, Integer> {
 	 */
 	private void doStartupTransition() {
 		for (Integer state : startupSeq) {
+			transitionSound.start();
 			publishProgress(state);
 			doSleep(Constants.STARTUP_BLINK_FREQ);
 		}

@@ -1,7 +1,6 @@
 package com.deim.ame.simon;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -11,23 +10,29 @@ import com.deim.ame.simon.utils.SimonOnTouchListener;
 import com.deim.ame.simon.utils.Util;
 
 import android.support.v7.app.ActionBarActivity;
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 public class PlayActivity extends ActionBarActivity {
 
-	private static OnTouchListener simonOnTouchListener;
+	private static SimonOnTouchListener simonOnTouchListener;
 	private static ImageView[] imgViews;
 	private static List<Integer> sequence;
 	private static List<Integer> userSequence;
 	private static int difficulty;
 	private static int round;
+	private static MediaPlayer[] buttonSounds;
+	private static MediaPlayer transitionSound;
+	private static boolean disabled;
+	private static Context context;
 
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -36,8 +41,20 @@ public class PlayActivity extends ActionBarActivity {
 		/* Get the main ImageViews */
 		imgViews = this.getImageViews();
 
+		/* Initialize sounds */
+		buttonSounds = getButtonSounds();
+		transitionSound = MediaPlayer.create(PlayActivity.this,
+				R.raw.transition);
+
+		/* Set the touch var as enabled */
+		disabled = false;
+		
+		/* Save the context */
+		context = this;
+
 		/* Initialize the Listener */
-		simonOnTouchListener = new SimonOnTouchListener(imgViews);
+		simonOnTouchListener = new SimonOnTouchListener(imgViews, buttonSounds,
+				transitionSound);
 
 		/* Set the onClick Listener over the Views area */
 		enableOnTouchListener();
@@ -91,13 +108,23 @@ public class PlayActivity extends ActionBarActivity {
 				simonLight, simonPlain };
 	}
 
+	private MediaPlayer[] getButtonSounds() {
+		MediaPlayer[] sounds = new MediaPlayer[Constants.TOTAL_COLORS];
+		sounds[0] = MediaPlayer.create(PlayActivity.this, R.raw.touch0);
+		sounds[1] = MediaPlayer.create(PlayActivity.this, R.raw.touch1);
+		sounds[2] = MediaPlayer.create(PlayActivity.this, R.raw.touch2);
+		sounds[3] = MediaPlayer.create(PlayActivity.this, R.raw.touch3);
+		return sounds;
+	}
+
 	/**
 	 * Set the OnTouchListener to the defined SimonOnTouchListener
 	 * 
 	 * @param imgViews
 	 */
 	public static void enableOnTouchListener() {
-		simonOnTouchListener = new SimonOnTouchListener(imgViews);
+		simonOnTouchListener.setEnabled();
+		enableTouch();
 		imgViews[Constants.PLAIN].setOnTouchListener(simonOnTouchListener);
 	}
 
@@ -108,7 +135,8 @@ public class PlayActivity extends ActionBarActivity {
 	 */
 	public static void disableOnTouchListener() {
 		System.out.println("disabling listener...");
-		imgViews[Constants.PLAIN].setOnTouchListener(null);
+		disableTouch();
+		simonOnTouchListener.setDisabled();
 	}
 
 	/***************** GAME LOGIC *****************/
@@ -129,7 +157,7 @@ public class PlayActivity extends ActionBarActivity {
 	 */
 	private static void newRound() {
 		if (round >= Constants.MAX_ROUNDS) {
-			System.exit(0);
+			finishGame(0);
 		}
 		userSequence = new ArrayList<Integer>();
 		showSequence();
@@ -156,6 +184,7 @@ public class PlayActivity extends ActionBarActivity {
 	private static void showSequence() {
 		// Disable all touch listeners
 		disableOnTouchListener();
+		disableTouch();
 		// Add a new color to the show sequence
 		addColorToSequence();
 		// Generates the show sequence with a PLAIN color on the last position
@@ -164,7 +193,7 @@ public class PlayActivity extends ActionBarActivity {
 		showSeq.add(Constants.PLAIN);
 		// Initialize and execute the blink async task
 		BlinkTask blink = new BlinkTask(imgViews, Constants.DELAY[difficulty],
-				false);
+				false, buttonSounds, transitionSound);
 		blink.execute(showSeq);
 	}
 
@@ -176,9 +205,28 @@ public class PlayActivity extends ActionBarActivity {
 	public static void addUserMove(int move) {
 		userSequence.add(move);
 		if (!Util.validMove(userSequence, sequence)) {
-			newGame();
+			finishGame(round);
 		} else if (userSequence.size() >= sequence.size()) {
 			newRound();
 		}
+	}
+	
+	public static void finishGame(int levelReached) {
+	    Intent intent = new Intent(context, ResultActivity.class);
+	    intent.putExtra("difficulty", difficulty);
+	    intent.putExtra("level", levelReached);
+	    context.startActivity(intent);
+	}
+
+	public static boolean isDisabled() {
+		return disabled;
+	}
+
+	public static void enableTouch() {
+		disabled = false;
+	}
+
+	public static void disableTouch() {
+		disabled = true;
 	}
 }
