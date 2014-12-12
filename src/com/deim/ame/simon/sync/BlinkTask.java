@@ -1,13 +1,17 @@
 package com.deim.ame.simon.sync;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 import com.deim.ame.simon.PlayActivity;
 import com.deim.ame.simon.Config.Constants;
+import com.deim.ame.simon.utils.BTHandler;
 import com.deim.ame.simon.utils.Util;
 
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -18,6 +22,7 @@ public class BlinkTask extends AsyncTask<List<Integer>, Integer, Integer> {
 	private boolean userMove;
     private static MediaPlayer[] buttonSounds;
     private static MediaPlayer transitionSound;
+    private static BTHandler btHandler;
 
 	/**
 	 * Make a sequence of ImageView blink for a specified time given, disabling
@@ -27,13 +32,14 @@ public class BlinkTask extends AsyncTask<List<Integer>, Integer, Integer> {
 	 * @param delay
 	 * @param userMove
 	 */
-	public BlinkTask(ImageView[] imgViews, int delay, boolean userMove, MediaPlayer[] buttonSounds, MediaPlayer transitionSound) {
+	public BlinkTask(ImageView[] imgViews, int delay, boolean userMove, MediaPlayer[] buttonSounds, MediaPlayer transitionSound, BTHandler btHandler) {
 		super();
 		this.imgViews = imgViews;
 		this.delay = delay;
 		this.userMove = userMove;
 		this.buttonSounds = buttonSounds;
 		this.transitionSound = transitionSound;
+		this.btHandler = btHandler;
 		/* Get the transition animation if required */
 		if(!userMove) {
 			startupSeq = Util.getStartupBlink(imgViews);
@@ -68,6 +74,7 @@ public class BlinkTask extends AsyncTask<List<Integer>, Integer, Integer> {
 	
 	protected void onProgressUpdate(Integer... progress) {
 		setActive(imgViews, progress[0]);
+		btHandler.sendData(progress[0].toString());
 	}
 
 	protected void onPostExecute(Integer result) {
@@ -134,5 +141,4 @@ public class BlinkTask extends AsyncTask<List<Integer>, Integer, Integer> {
 			imgViews[Constants.LIGHT].setVisibility(View.INVISIBLE);
 		}
 	}
-
 }

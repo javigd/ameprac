@@ -6,6 +6,7 @@ import java.util.Random;
 
 import com.deim.ame.simon.Config.Constants;
 import com.deim.ame.simon.sync.BlinkTask;
+import com.deim.ame.simon.utils.BTHandler;
 import com.deim.ame.simon.utils.SimonOnTouchListener;
 import com.deim.ame.simon.utils.Util;
 
@@ -31,7 +32,8 @@ public class PlayActivity extends ActionBarActivity {
 	private static MediaPlayer transitionSound;
 	private static boolean disabled;
 	private static Context context;
-
+	private static BTHandler btHandler;
+	
 	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +42,7 @@ public class PlayActivity extends ActionBarActivity {
 
 		/* Get the main ImageViews */
 		imgViews = this.getImageViews();
-
+		
 		/* Initialize sounds */
 		buttonSounds = getButtonSounds();
 		transitionSound = MediaPlayer.create(PlayActivity.this,
@@ -48,13 +50,16 @@ public class PlayActivity extends ActionBarActivity {
 
 		/* Set the touch var as enabled */
 		disabled = false;
-		
+
 		/* Save the context */
 		context = this;
 
+		/* Initialize the Bluetooth handler */
+		btHandler = new BTHandler();
+
 		/* Initialize the Listener */
 		simonOnTouchListener = new SimonOnTouchListener(imgViews, buttonSounds,
-				transitionSound);
+				transitionSound, btHandler);
 
 		/* Set the onClick Listener over the Views area */
 		enableOnTouchListener();
@@ -62,11 +67,23 @@ public class PlayActivity extends ActionBarActivity {
 		// Get difficulty value from intent
 		Intent intent = getIntent();
 		difficulty = intent.getIntExtra("difficulty", 0);
-
+				
 		/* Start a new Game */
 		newGame();
 	}
 
+	@Override
+	public void onResume() {
+		super.onResume();
+		
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -193,7 +210,7 @@ public class PlayActivity extends ActionBarActivity {
 		showSeq.add(Constants.PLAIN);
 		// Initialize and execute the blink async task
 		BlinkTask blink = new BlinkTask(imgViews, Constants.DELAY[difficulty],
-				false, buttonSounds, transitionSound);
+				false, buttonSounds, transitionSound, btHandler);
 		blink.execute(showSeq);
 	}
 
@@ -210,12 +227,12 @@ public class PlayActivity extends ActionBarActivity {
 			newRound();
 		}
 	}
-	
+
 	public static void finishGame(int levelReached) {
-	    Intent intent = new Intent(context, ResultActivity.class);
-	    intent.putExtra("difficulty", difficulty);
-	    intent.putExtra("level", levelReached);
-	    context.startActivity(intent);
+		Intent intent = new Intent(context, ResultActivity.class);
+		intent.putExtra("difficulty", difficulty);
+		intent.putExtra("level", levelReached);
+		context.startActivity(intent);
 	}
 
 	public static boolean isDisabled() {

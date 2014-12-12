@@ -8,7 +8,6 @@ import com.deim.ame.simon.PlayActivity;
 import com.deim.ame.simon.Config.Constants;
 import com.deim.ame.simon.sync.BlinkTask;
 
-import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,14 +20,16 @@ public class SimonOnTouchListener implements OnTouchListener {
 	private boolean disabled;
 	private MediaPlayer[] buttonSounds;
 	private MediaPlayer transitionSound;
+	private BTHandler btHandler;
 	
-	public SimonOnTouchListener(ImageView[] imgViews, MediaPlayer[] buttonSounds, MediaPlayer transitionSound) {
+	public SimonOnTouchListener(ImageView[] imgViews, MediaPlayer[] buttonSounds, MediaPlayer transitionSound, BTHandler btHandler) {
 		super();
 		this.imgViews = imgViews;
 		this.simonPlain = imgViews[Constants.PLAIN];
 		this.disabled = false;
 		this.buttonSounds = buttonSounds;
 		this.transitionSound = transitionSound;
+		this.btHandler = btHandler;
 	}
 
 	@Override
@@ -81,7 +82,7 @@ public class SimonOnTouchListener implements OnTouchListener {
 		List<Integer> touchSeq = new ArrayList<Integer>(Arrays.asList(state,
 				Constants.PLAIN));
 		// Initialize the blink async task
-		BlinkTask blink = new BlinkTask(imgViews, Constants.DEFAULT_BLINK_FREQ, true, buttonSounds, transitionSound);
+		BlinkTask blink = new BlinkTask(imgViews, Constants.DEFAULT_BLINK_FREQ, true, buttonSounds, transitionSound, btHandler);
 		
 		blink.execute(touchSeq);
 	}
